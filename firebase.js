@@ -1,20 +1,20 @@
-import { initializeApp } from 'firebase/app';
-import { GoogleAuthProvider, getAuth } from 'firebase/auth';
+import { initializeApp } from "firebase/app";
+import { GoogleAuthProvider, getAuth } from "firebase/auth";
 
 const firebaseConfig = {
+  apiKey: "AIzaSyDAZTVZiBaTs17wIEdtdzB7imq-7b0IkQs",
 
-  apiKey: "AIzaSyDqEZ8XQh8W1UNMxYmV8ckUfHYvJp2ge1k",
+  authDomain: "point-connect.firebaseapp.com",
 
-  authDomain: "uber-clone-ddb16.firebaseapp.com",
+  projectId: "point-connect",
 
-  projectId: "uber-clone-ddb16",
+  storageBucket: "point-connect.firebasestorage.app",
 
-  storageBucket: "uber-clone-ddb16.appspot.com",
+  messagingSenderId: "902025845124",
 
-  messagingSenderId: "1062829683379",
+  appId: "1:902025845124:web:5717c2b724facbd35525d1",
 
-  appId: "1:1062829683379:web:3057427abacc8c0f9ab6c6"
-
+  measurementId: "G-73P3Q78WWR",
 };
 
 // Initialize Firebase
@@ -23,4 +23,4 @@ const app = initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
 
-export { app, provider, auth };
+export { app, auth, provider };
