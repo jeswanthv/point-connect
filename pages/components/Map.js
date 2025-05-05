@@ -26,11 +26,56 @@ export const Map = (props) => {
       map.fitBounds([props.pickupCoordinates, props.dropoffCoordinates], {
         padding: 60,
       });
+
+      addRouteToMap(map, props.pickupCoordinates, props.dropoffCoordinates);
     }
   }, [props.pickupCoordinates, props.dropoffCoordinates]);
 
   const addToMap = (map, coordinates) => {
-    const marker1 = new mapboxgl.Marker().setLngLat(coordinates).addTo(map);
+    new mapboxgl.Marker().setLngLat(coordinates).addTo(map);
+  };
+
+  const addRouteToMap = async (map, start, end) => {
+    const query = await fetch(
+      `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`
+    );
+    const data = await query.json();
+
+    if (data.routes && data.routes.length > 0) {
+      const route = data.routes[0].geometry.coordinates;
+
+      const geojson = {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "LineString",
+          coordinates: route,
+        },
+      };
+
+      if (map.getSource("route")) {
+        map.getSource("route").setData(geojson);
+      } else {
+        map.addLayer({
+          id: "route",
+          type: "line",
+          source: {
+            type: "geojson",
+            data: geojson,
+          },
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#EC5F5F",
+            "line-width": 5,
+          },
+        });
+      }
+    } else {
+      console.error("No routes found in the API response.");
+    }
   };
 
   return <Wrapper id="map"></Wrapper>;

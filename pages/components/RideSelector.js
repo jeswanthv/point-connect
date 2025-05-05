@@ -1,39 +1,63 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import tw from "tailwind-styled-components";
-import { carList } from "../../data/carList";
 
 function RideSelector({ pickupCoordinates, dropoffCoordinates }) {
-  const [rideDuration, setRideDuration] = useState(0);
+  const [rideOptions, setRideOptions] = useState([
+    {
+      type: "Economy",
+      description: "Walking and VTA Ride",
+      duration: "40 min",
+      price: "$5.00",
+      timeline: ["Start Walking", "Board VTA", "Reach Destination"],
+    },
+    {
+      type: "Faster Travel",
+      description: "Cab",
+      duration: "20 min",
+      price: "$15.00",
+      timeline: ["Book Cab", "Cab Ride", "Reach Destination"],
+    },
+  ]);
 
-  useEffect(() => {
-    fetch(
-      `https://api.mapbox.com/directions/v5/mapbox/driving/${pickupCoordinates[0]}, ${pickupCoordinates[1]};${dropoffCoordinates[0]}, ${dropoffCoordinates[1]}?access_token=pk.eyJ1IjoiZGV2bGlucm9jaGEiLCJhIjoiY2t2bG82eTk4NXFrcDJvcXBsemZzdnJoYSJ9.aq3RAvhuRww7R_7q-giWpA`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.routes) {
-          setRideDuration(data.routes[0]?.duration / 100);
-        }
-      });
-  }, [pickupCoordinates, dropoffCoordinates]);
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  const handleOptionClick = (option) => {
+    setSelectedOption(option);
+  };
+
+  const closePopup = () => {
+    setSelectedOption(null);
+  };
 
   return (
     <Wrapper>
-      <Title>Choose a ride, or swipe up for more</Title>
-      <CarList>
-        {carList.map((car, index) => (
-          <Car key={index}>
-            <CarImage src={car.imgUrl} />
-
-            <CarDetails>
-              <Service>{car.service}</Service>
-              <Time>5 min away</Time>
-            </CarDetails>
-
-            <Price>${(rideDuration * car.multiplier).toFixed(2)}</Price>
-          </Car>
+      <Title>Choose a travel option</Title>
+      <OptionsList>
+        {rideOptions.map((option, index) => (
+          <OptionButton key={index} onClick={() => handleOptionClick(option)}>
+            <OptionDetails>
+              <Type>{option.type}</Type>
+              <Description>{option.description}</Description>
+              <Duration>{option.duration}</Duration>
+            </OptionDetails>
+            <Price>{option.price}</Price>
+          </OptionButton>
         ))}
-      </CarList>
+      </OptionsList>
+
+      {selectedOption && (
+        <Popup>
+          <PopupContent>
+            <PopupTitle>{selectedOption.type} Timeline</PopupTitle>
+            <Timeline>
+              {selectedOption.timeline.map((step, index) => (
+                <TimelineStep key={index}>{step}</TimelineStep>
+              ))}
+            </Timeline>
+            <CloseButton onClick={closePopup}>Close</CloseButton>
+          </PopupContent>
+        </Popup>
+      )}
     </Wrapper>
   );
 }
@@ -47,30 +71,55 @@ const Wrapper = tw.div`
 const Title = tw.div`
     text-gray-500 text-center text-xs py-2 border-b
 `;
-const CarList = tw.div`
-    overflow-y-scroll
+
+const OptionsList = tw.div`
+    overflow-y-scroll px-4
 `;
 
-const Car = tw.div`
-    flex p-4 items-center
+const OptionButton = tw.button`
+    flex p-4 items-center m-4 border-2 border-gray-200 cursor-pointer hover:bg-gray-100 w-full max-w-md mx-auto
 `;
 
-const CarImage = tw.img`
-    h-14 mr-4
-`;
-
-const CarDetails = tw.div`
+const OptionDetails = tw.div`
     flex-1
 `;
 
-const Service = tw.div`
+const Type = tw.div`
     font-medium
 `;
 
-const Time = tw.div`
+const Description = tw.div`
+    text-xs text-gray-500
+`;
+
+const Duration = tw.div`
     text-xs text-blue-500
 `;
 
 const Price = tw.div`
     text-sm
+`;
+
+const Popup = tw.div`
+    fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50
+`;
+
+const PopupContent = tw.div`
+    bg-white p-6 rounded-lg shadow-lg w-3/4 max-w-md
+`;
+
+const PopupTitle = tw.div`
+    text-lg font-bold mb-4
+`;
+
+const Timeline = tw.div`
+    flex flex-col gap-2
+`;
+
+const TimelineStep = tw.div`
+    text-sm text-gray-700
+`;
+
+const CloseButton = tw.button`
+    mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600
 `;
