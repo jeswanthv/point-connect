@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaBus, FaCar, FaWalking } from "react-icons/fa";
 import tw from "tailwind-styled-components";
 
 function RideSelector({ pickupCoordinates, dropoffCoordinates }) {
@@ -29,6 +30,18 @@ function RideSelector({ pickupCoordinates, dropoffCoordinates }) {
     setSelectedOption(null);
   };
 
+  const getIconForStep = (step) => {
+    if (step.toLowerCase().includes("walk")) {
+      return <FaWalking className="w-4 h-4 text-blue-800 dark:text-blue-300" />;
+    } else if (step.toLowerCase().includes("cab")) {
+      return <FaCar className="w-4 h-4 text-blue-800 dark:text-blue-300" />;
+    } else if (step.toLowerCase().includes("vta")) {
+      return <FaBus className="w-4 h-4 text-blue-800 dark:text-blue-300" />;
+    } else {
+      return <FaWalking className="w-4 h-4 text-blue-800 dark:text-blue-300" />; // Default icon
+    }
+  };
+
   return (
     <Wrapper>
       <Title>Choose a travel option</Title>
@@ -48,13 +61,26 @@ function RideSelector({ pickupCoordinates, dropoffCoordinates }) {
       {selectedOption && (
         <Popup>
           <PopupContent>
+            <CloseButtonTopRight onClick={closePopup}>✕</CloseButtonTopRight>
             <PopupTitle>{selectedOption.type} Timeline</PopupTitle>
             <Timeline>
               {selectedOption.timeline.map((step, index) => (
-                <TimelineStep key={index}>{step}</TimelineStep>
+                <TimelineItem key={index}>
+                  <TimelineIcon>{getIconForStep(step)}</TimelineIcon>
+                  <TimelineContent>
+                    <TimelineTitle>{step}</TimelineTitle>
+                    {index !== selectedOption.timeline.length - 1 && (
+                      <TimelineTime>Estimated Time</TimelineTime>
+                    )}
+                    {index !== selectedOption.timeline.length - 1 && (
+                      <TimelineDescription>
+                        Description of the step goes here.
+                      </TimelineDescription>
+                    )}
+                  </TimelineContent>
+                </TimelineItem>
               ))}
             </Timeline>
-            <CloseButton onClick={closePopup}>Close</CloseButton>
           </PopupContent>
         </Popup>
       )}
@@ -105,15 +131,43 @@ const Popup = tw.div`
 `;
 
 const PopupContent = tw.div`
-    bg-white p-6 rounded-lg shadow-lg w-3/4 max-w-md
+    bg-white p-10 rounded-lg shadow-lg w-3/4 max-w-md relative
+`;
+
+const CloseButtonTopRight = tw.button`
+    absolute top-2 right-2  text-gray-600 rounded-full p-2 
 `;
 
 const PopupTitle = tw.div`
     text-lg font-bold mb-4
 `;
 
-const Timeline = tw.div`
-    flex flex-col gap-2
+const Timeline = tw.ol`
+  relative border-l border-gray-200 dark:border-gray-700
+`;
+
+const TimelineItem = tw.li`
+  mb-10 ml-6
+`;
+
+const TimelineIcon = tw.span`
+  absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900
+`;
+
+const TimelineContent = tw.div`
+  flex flex-col gap-2
+`;
+
+const TimelineTitle = tw.h3`
+  mb-1 text-lg font-semibold text-gray-900 dark:text-white
+`;
+
+const TimelineTime = tw.time`
+  block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500
+`;
+
+const TimelineDescription = tw.p`
+  text-base font-normal text-gray-500 dark:text-gray-400
 `;
 
 const TimelineStep = tw.div`
