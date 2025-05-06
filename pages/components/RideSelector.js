@@ -103,7 +103,7 @@ const OptionsList = tw.div`
 `;
 
 const OptionButton = tw.button`
-    flex p-4 items-center m-4 border-2 border-gray-200 cursor-pointer hover:bg-gray-100 w-full max-w-md mx-auto
+    flex p-4 items-center m-4 cursor-pointer hover:bg-gray-100 w-full max-w-md mx-auto rounded-lg bg-gray-900 text-white text-left
 `;
 
 const OptionDetails = tw.div`
@@ -115,11 +115,11 @@ const Type = tw.div`
 `;
 
 const Description = tw.div`
-    text-xs text-gray-500
+    text-xs 
 `;
 
 const Duration = tw.div`
-    text-xs text-blue-500
+    text-xs 
 `;
 
 const Price = tw.div`
