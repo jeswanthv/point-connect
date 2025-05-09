@@ -1,28 +1,37 @@
 import { useState } from "react";
-import { FaBus, FaCar, FaWalking } from "react-icons/fa";
+import {
+  FaArrowRight,
+  FaBolt,
+  FaBus,
+  FaCar,
+  FaDollarSign,
+  FaTrain,
+  FaWalking,
+} from "react-icons/fa";
 import tw from "tailwind-styled-components";
 
-function RideSelector({ pickupCoordinates, dropoffCoordinates }) {
+function RideSelector({ economy }) {
   const [rideOptions, setRideOptions] = useState([
     {
       type: "Economy",
-      description: "Walking and VTA Ride",
-      duration: "40 min",
-      price: "$5.00",
-      timeline: ["Start Walking", "Board VTA", "Reach Destination"],
+      description: "Walk / Cab / VTA Ride / Caltrain",
+      duration: ["10 mins", "8 mins", "15 mins", "35 mins"],
+      price: ["$0.00", "$8.00", "$2.50", "$10.00"],
+      timeline: ["Walk", "Cab", "vta", "caltrain", "Reach Destination"],
     },
     {
       type: "Faster Travel",
-      description: "Cab",
-      duration: "20 min",
-      price: "$15.00",
-      timeline: ["Book Cab", "Cab Ride", "Reach Destination"],
+      description: ["Cab"],
+      duration: ["43 min"],
+      price: ["$45.00"],
+      timeline: ["Cab Ride", "Reach Destination"],
     },
   ]);
 
   const [selectedOption, setSelectedOption] = useState(null);
 
   const handleOptionClick = (option) => {
+    economy(option.type === "Economy");
     setSelectedOption(option);
   };
 
@@ -37,6 +46,12 @@ function RideSelector({ pickupCoordinates, dropoffCoordinates }) {
       return <FaCar className="w-4 h-4 text-blue-800 dark:text-blue-300" />;
     } else if (step.toLowerCase().includes("vta")) {
       return <FaBus className="w-4 h-4 text-blue-800 dark:text-blue-300" />;
+    } else if (step.toLowerCase().includes("train")) {
+      return <FaTrain className="w-4 h-4 text-blue-800 dark:text-blue-300" />;
+    } else if (step.toLowerCase().includes("destination")) {
+      return (
+        <FaArrowRight className="w-4 h-4 text-blue-800 dark:text-blue-300" />
+      );
     } else {
       return <FaWalking className="w-4 h-4 text-blue-800 dark:text-blue-300" />; // Default icon
     }
@@ -49,11 +64,49 @@ function RideSelector({ pickupCoordinates, dropoffCoordinates }) {
         {rideOptions.map((option, index) => (
           <OptionButton key={index} onClick={() => handleOptionClick(option)}>
             <OptionDetails>
-              <Type>{option.type}</Type>
+              <Type>
+                {option.type === "Economy" && (
+                  <FaDollarSign className="inline-block mr-2 text-green-500" />
+                )}
+                {option.type === "Faster Travel" && (
+                  <FaBolt className="inline-block mr-2 text-yellow-500" />
+                )}
+                {option.type}
+              </Type>
               <Description>{option.description}</Description>
-              <Duration>{option.duration}</Duration>
+              <Duration>
+                {(() => {
+                  const totalMinutes = option.duration.reduce((total, time) => {
+                    const [value, unit] = time.split(" ");
+                    const numericValue = parseInt(value, 10);
+                    if (unit.includes("hour")) {
+                      return total + numericValue * 60;
+                    } else if (unit.includes("min")) {
+                      return total + numericValue;
+                    }
+                    return total;
+                  }, 0);
+                  const hours = Math.floor(totalMinutes / 60);
+                  const minutes = totalMinutes % 60;
+                  return `${
+                    hours > 0 ? `${hours} hr${hours > 1 ? "s" : ""} ` : ""
+                  }${
+                    minutes > 0 ? `${minutes} min${minutes > 1 ? "s" : ""}` : ""
+                  }`;
+                })()}
+              </Duration>
             </OptionDetails>
-            <Price>{option.price}</Price>
+            <Price>
+              {"$" +
+                option.price
+                  .reduce((total, current) => {
+                    const numericValue = parseFloat(
+                      current.replace(/[^0-9.-]+/g, "")
+                    );
+                    return total + (isNaN(numericValue) ? 0 : numericValue);
+                  }, 0)
+                  .toFixed(2)}
+            </Price>
           </OptionButton>
         ))}
       </OptionsList>
@@ -62,7 +115,7 @@ function RideSelector({ pickupCoordinates, dropoffCoordinates }) {
         <Popup>
           <PopupContent>
             <CloseButtonTopRight onClick={closePopup}>✕</CloseButtonTopRight>
-            <PopupTitle>{selectedOption.type} Timeline</PopupTitle>
+            <PopupTitle>{selectedOption.type}</PopupTitle>
             <Timeline>
               {selectedOption.timeline.map((step, index) => (
                 <TimelineItem key={index}>
@@ -70,13 +123,20 @@ function RideSelector({ pickupCoordinates, dropoffCoordinates }) {
                   <TimelineContent>
                     <TimelineTitle>{step}</TimelineTitle>
                     {index !== selectedOption.timeline.length - 1 && (
-                      <TimelineTime>Estimated Time</TimelineTime>
+                      <TimelineTime>
+                        {selectedOption.duration[index] || "N/A"}
+                      </TimelineTime>
                     )}
                     {index !== selectedOption.timeline.length - 1 && (
                       <TimelineDescription>
-                        Description of the step goes here.
+                        Cost: {selectedOption.price[index] || "N/A"}
                       </TimelineDescription>
                     )}
+                    {/* {index !== selectedOption.timeline.length - 1 && (
+                      <TimelineDescription>
+                        Description of the step goes here.
+                      </TimelineDescription>
+                    )} */}
                   </TimelineContent>
                 </TimelineItem>
               ))}
@@ -115,11 +175,11 @@ const Type = tw.div`
 `;
 
 const Description = tw.div`
-    text-xs 
+    text-xs ml-6
 `;
 
 const Duration = tw.div`
-    text-xs 
+    text-xs ml-6
 `;
 
 const Price = tw.div`
@@ -147,7 +207,7 @@ const Timeline = tw.ol`
 `;
 
 const TimelineItem = tw.li`
-  mb-10 ml-6
+  mb-5 ml-6
 `;
 
 const TimelineIcon = tw.span`
@@ -159,11 +219,11 @@ const TimelineContent = tw.div`
 `;
 
 const TimelineTitle = tw.h3`
-  mb-1 text-lg font-semibold text-gray-900 dark:text-white
+  text-lg font-semibold text-gray-900 dark:text-white
 `;
 
 const TimelineTime = tw.time`
-  block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500
+  block text-sm font-normal leading-none text-gray-400 dark:text-gray-500
 `;
 
 const TimelineDescription = tw.p`

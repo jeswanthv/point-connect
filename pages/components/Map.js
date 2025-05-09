@@ -14,22 +14,44 @@ export const Map = (props) => {
       zoom: 3,
     });
 
-    if (props.pickupCoordinates) {
-      addToMap(map, props.pickupCoordinates);
-    }
+    const coordinatesSet1 = [
+      [-121.9552, 37.3541],
+      [-121.9527, 37.3575],
+      [-121.9281, 37.366],
+      [-121.9123, 37.3771],
+      [-122.168861, 37.42823],
+    ];
 
-    if (props.dropoffCoordinates) {
-      addToMap(map, props.dropoffCoordinates);
-    }
+    const coordinatesSet2 = [
+      [-121.9552, 37.3541],
+      [-122.168861, 37.42823],
+    ];
 
-    if (props.pickupCoordinates && props.dropoffCoordinates) {
-      map.fitBounds([props.pickupCoordinates, props.dropoffCoordinates], {
-        padding: 60,
+    if (props.economy == true || props.economy == false) {
+      const selectedCoordinates = props.economy
+        ? coordinatesSet1
+        : coordinatesSet2;
+
+      selectedCoordinates.forEach((coord, index) => {
+        addToMap(map, coord);
+        if (index < selectedCoordinates.length - 1) {
+          addRouteToMap(map, coord, selectedCoordinates[index + 1]);
+        }
       });
 
-      addRouteToMap(map, props.pickupCoordinates, props.dropoffCoordinates);
+      if (props.pickupCoordinates && props.dropoffCoordinates) {
+        map.fitBounds(
+          [
+            [-121.9552, 37.3541],
+            [-122.143, 37.4419],
+          ],
+          {
+            padding: 60,
+          }
+        );
+      }
     }
-  }, [props.pickupCoordinates, props.dropoffCoordinates]);
+  }, [props.economy]);
 
   const addToMap = (map, coordinates) => {
     new mapboxgl.Marker().setLngLat(coordinates).addTo(map);

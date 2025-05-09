@@ -11,6 +11,19 @@ function Confirm() {
 
   const [pickupCoordinates, setPickupCoordinates] = useState([0, 0]);
   const [dropoffCoordinates, setDropoffCoordinates] = useState([0, 0]);
+  const [economy, setEconomy] = useState(true);
+  console.log("economy:", economy);
+  const coordinatesArray = [
+    [-121.9552, 37.3541],
+    [-121.9527, 37.3575],
+    [-121.9281, 37.366],
+    [-121.9123, 37.3771],
+    [-122.168861, 37.42823],
+  ];
+  const coordinatesArray2 = [
+    [-121.9552, 37.3541],
+    [-122.143, 37.4419],
+  ];
 
   const getPickupCoordinates = (pickup) => {
     fetch(
@@ -57,12 +70,17 @@ function Confirm() {
       <Map
         pickupCoordinates={pickupCoordinates}
         dropoffCoordinates={dropoffCoordinates}
+        coordinatesArray={coordinatesArray}
+        coordinatesArray2={coordinatesArray2}
+        economy={economy}
       />
+      {/* <Map
+        pickupCoordinates={pickupCoordinates}
+        dropoffCoordinates={dropoffCoordinates}
+        coordinatesArray={coordinatesArray}
+      /> */}
       <RideContainer>
-        <RideSelector
-          pickupCoordinates={pickupCoordinates}
-          dropoffCoordinates={dropoffCoordinates}
-        />
+        <RideSelector economy={setEconomy} />
 
         <ConfirmButtonContainer>
           <ConfirmButton>Confirm</ConfirmButton>
