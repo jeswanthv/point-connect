@@ -1,0 +1,63 @@
+{
+    "source_lat": "37.3541",
+    "source_long": "-121.9552",
+    "dest_lat": "37.4419",
+    "dest_long": "-122.1430",
+    "recommendations": {
+      "1": {
+        "mode": "cost_effective_mode",
+        "plan": {
+          "1": {
+            "method": "walking",
+            "start_lat": "37.3541",
+            "start_long": "-121.9552",
+            "end_lat": "37.3575",
+            "end_long": "-121.9527",
+            "estimated_time": "10 mins",
+            "api_tracker": "NA"
+          },
+          "2": {
+            "method": "uber",
+            "start_lat": "37.3575",
+            "start_long": "-121.9527",
+            "end_lat": "37.3660",
+            "end_long": "-121.9281",
+            "estimated_time": "8 mins",
+            "api_tracker": "https://api.uber.com/track/ride123"
+          },
+          "3": {
+            "method": "vta_bus",
+            "start_lat": "37.3660",
+            "start_long": "-121.9281",
+            "end_lat": "37.3771",
+            "end_long": "-121.9123",
+            "estimated_time": "15 mins",
+            "api_tracker": "https://vta.org/track/bus456"
+          },
+          "4": {
+            "method": "caltrain",
+            "start_lat": "37.3771",
+            "start_long": "-121.9123",
+            "end_lat": "37.4419",
+            "end_long": "-122.1430",
+            "estimated_time": "35 mins",
+            "api_tracker": "https://caltrain.com/track/train789"
+          }
+        }
+      },
+      "2": {
+        "mode": "fastest_mode",
+        "plan": {
+          "1": {
+            "method": "uber",
+            "start_lat": "37.3541",
+            "start_long": "-121.9552",
+            "end_lat": "37.4419",
+            "end_long": "-122.1430",
+            "estimated_time": "25 mins",
+            "api_tracker": "https://api.uber.com/track/ride987"
+          }
+        }
+      }
+    }
+  }
